@@ -34,6 +34,7 @@ Create a PostgreSQL database named `logistics_assessment`.
 ```bash
 cd backend
 npm install
+```
 
 ## Frontend setup
 
@@ -41,3 +42,4 @@ npm install
 cd frontend
 npm install --legacy-peer-deps
 ng serve
+```
