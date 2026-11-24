@@ -1,0 +1,71 @@
+<header class="topbar">
+  <a class="brand" routerLink="/products">Logistics Shop</a>
+
+  <div class="topbar-actions">
+    <span class="welcome">Welcome, {{ user?.email }}</span>
+    <a class="cart-link" routerLink="/orders">Orders</a>
+    <a class="cart-link" routerLink="/cart">
+      Cart <span>{{ cartCount() }}</span>
+    </a>
+    <button class="logout-button" type="button" (click)="logout()">Log out</button>
+  </div>
+</header>
+
+<main class="page">
+  <section class="page-heading">
+    <div>
+      <p class="eyebrow">CATALOG</p>
+      <h1>Products</h1>
+      <p class="muted">Search the catalog and add items to your cart.</p>
+    </div>
+
+    <input
+      class="search"
+      type="search"
+      placeholder="Search name or SKU…"
+      [formControl]="searchControl"
+      aria-label="Search products"
+    />
+  </section>
+
+  <p class="notice" *ngIf="notice()">{{ notice() }}</p>
+  <p class="error" *ngIf="error()">{{ error() }}</p>
+  <p class="muted" *ngIf="loading()">Loading products…</p>
+  <p class="muted" *ngIf="!loading() && products().length === 0">
+    No products found.
+  </p>
+
+  <section class="product-grid" *ngIf="!loading() && products().length > 0">
+    <article class="product-card" *ngFor="let product of products()">
+      <p class="sku">{{ product.sku }}</p>
+      <h2>{{ product.name }}</h2>
+      <p class="price">Price {{ product.price }}</p>
+      <p class="stock">
+        {{ product.stock_qty > 0 ? product.stock_qty + ' in stock' : 'Out of stock' }}
+      </p>
+      <button
+        type="button"
+        [disabled]="product.stock_qty < 1"
+        (click)="addToCart(product)"
+      >
+        Add to cart
+      </button>
+    </article>
+  </section>
+
+  <footer class="pagination" *ngIf="totalItems() > 0">
+    <span>{{ totalItems() }} products · Page {{ page() }} of {{ totalPages() }}</span>
+    <div>
+      <button type="button" (click)="previousPage()" [disabled]="page() <= 1">
+        Previous
+      </button>
+      <button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page() >= totalPages()"
+      >
+        Next
+      </button>
+    </div>
+  </footer>
+</main>

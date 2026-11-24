@@ -1,0 +1,67 @@
+<nav class="topbar-actions">
+  <a class="back-link" routerLink="/products">Products</a>
+  <a class="back-link" routerLink="/orders">Orders</a>
+</nav>
+
+<main class="page">
+  <p class="eyebrow">YOUR SELECTION</p>
+  <h1>Shopping cart</h1>
+
+  <p class="notice success" *ngIf="message()">{{ message() }}</p>
+  <p class="notice error" *ngIf="error()">{{ error() }}</p>
+
+  <p class="notice" *ngIf="!canCreateOrder">
+    Your account has VIEW access. You can browse products, but can’t place orders.
+  </p>
+
+  <section class="empty-card" *ngIf="items().length === 0">
+    <p>Your cart is empty.</p>
+    <a routerLink="/products">Browse products</a>
+  </section>
+
+  <section class="cart-card" *ngIf="items().length > 0">
+    <article class="cart-row" *ngFor="let item of items()">
+      <div class="product-info">
+        <h2>{{ item.product.name }}</h2>
+        <p>{{ item.product.sku }} · {{ item.product.price }} each</p>
+      </div>
+
+      <label class="quantity">
+        Qty
+        <input
+          type="number"
+          min="1"
+          [max]="item.product.stock_qty"
+          [value]="item.quantity"
+          (change)="updateQuantity(item.product.id, $event)"
+        />
+      </label>
+
+      <strong>
+        {{ formatLineTotal(item.product.price, item.quantity) | number:'1.2-2' }}
+      </strong>
+
+      <button
+        class="remove-button"
+        type="button"
+        (click)="removeItem(item.product.id)"
+      >
+        Remove
+      </button>
+    </article>
+
+    <footer class="cart-footer">
+      <div>
+        <span>Total</span>
+        <strong>{{ total() | number:'1.2-2' }}</strong>
+      </div>
+      <button
+        type="button"
+        [disabled]="loading() || !canCreateOrder"
+        (click)="createOrder()"
+      >
+        {{ loading() ? 'Placing order…' : 'Create order' }}
+      </button>
+    </footer>
+  </section>
+</main>

@@ -1,0 +1,91 @@
+<header class="topbar">
+  <a class="brand" routerLink="/products">Logistics Shop</a>
+  <nav>
+    <a routerLink="/products">Products</a>
+    <a routerLink="/cart">Cart</a>
+    <a routerLink="/orders">Orders</a>
+    <button type="button" (click)="logout()">Log out</button>
+  </nav>
+</header>
+
+<main class="page">
+  <p class="eyebrow">PURCHASE HISTORY</p>
+  <h1>My orders</h1>
+
+  <p class="notice success" *ngIf="message()">{{ message() }}</p>
+  <p class="notice error" *ngIf="error()">{{ error() }}</p>
+
+  <form class="filters" [formGroup]="filters" (ngSubmit)="applyFilters()">
+    <label>
+      Status
+      <select formControlName="status">
+        <option value="">All statuses</option>
+        <option value="PENDING">Pending</option>
+        <option value="CONFIRMED">Confirmed</option>
+        <option value="CANCELLED">Cancelled</option>
+      </select>
+    </label>
+
+    <label>
+      From
+      <input type="date" formControlName="from" />
+    </label>
+
+    <label>
+      To
+      <input type="date" formControlName="to" />
+    </label>
+
+    <button type="submit">Apply filters</button>
+  </form>
+
+  <p class="muted" *ngIf="loading()">Loading orders…</p>
+  <p class="muted" *ngIf="!loading() && orders().length === 0">
+    No orders found.
+  </p>
+
+  <section class="order-list" *ngIf="!loading() && orders().length > 0">
+    <article class="order-card" *ngFor="let order of orders()">
+      <div class="order-top">
+        <div>
+          <p class="muted">Order number</p>
+          <h2>{{ order.order_number }}</h2>
+        </div>
+        <span class="status" [ngClass]="order.status.toLowerCase()">
+          {{ order.status }}
+        </span>
+      </div>
+
+      <div class="order-details">
+        <span>{{ order.created_at | date:'medium' }}</span>
+        <span>{{ order.item_count }} item(s)</span>
+        <strong>{{ order.total_amount }}</strong>
+      </div>
+
+      <button
+        *ngIf="canCancel(order)"
+        class="cancel-button"
+        type="button"
+        (click)="cancelOrder(order)"
+      >
+        Cancel order
+      </button>
+    </article>
+  </section>
+
+  <footer class="pagination" *ngIf="totalItems() > 0">
+    <span>{{ totalItems() }} orders · Page {{ page() }} of {{ totalPages() }}</span>
+    <div>
+      <button type="button" (click)="previousPage()" [disabled]="page() <= 1">
+        Previous
+      </button>
+      <button
+        type="button"
+        (click)="nextPage()"
+        [disabled]="page() >= totalPages()"
+      >
+        Next
+      </button>
+    </div>
+  </footer>
+</main>
